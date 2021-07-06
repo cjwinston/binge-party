@@ -23,7 +23,6 @@ titleResponse = requests.get(
                 'https://api.themoviedb.org/3/search/movie?api_key='
                 + api_key + '&query=' + title
                 )
-# print(titleResponse.json())
 
 r = titleResponse.json()
 
