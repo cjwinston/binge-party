@@ -1,7 +1,6 @@
 import requests
 import json
 
-# cam's branch
 # menu
 
 print("Hello! Welcome to Binge-Party!!")
@@ -34,8 +33,23 @@ resultID = input("Type in the id of the movie/show you're interested in: ")
 provResponse = requests.get(
                 'https://api.themoviedb.org/3/'
                 + featureType + '/' + resultID
-                + '/watch/providers?api_key=' + api_key)
+                + '/watch/providers?api_key=' + api_key
+                )
 # print(provResponse.json())
 pr = provResponse.json()
-# for res in pr['results']:
-# print(res['provider_name'])
+
+print('1).Streaming Services\n2).Rent\n3).Buy')
+
+
+def switch2(buyOption):
+    switcher = {
+        1: 'flatrate',
+        2: 'rent',
+        3: 'buy'
+    }
+    return switcher.get(buyOption, "No listings available for this option.")
+
+
+buyOption = switch2(int(input("Enter 1 for streaming service options, 2 for rent options, or 3 for buy options. ")))
+for results in pr['results']['US'][buyOption]:
+    print(results['provider_name'])
