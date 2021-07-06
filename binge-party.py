@@ -23,7 +23,6 @@ titleResponse = requests.get(
                 'https://api.themoviedb.org/3/search/movie?api_key='
                 + api_key + '&query=' + title
                 )
-# print(titleResponse.json())
 
 r = titleResponse.json()
 
@@ -36,6 +35,6 @@ provResponse = requests.get(
                 + featureType + '/' + resultID
                 + '/watch/providers?api_key=' + api_key)
 # print(provResponse.json())
-# pr = provResponse.json()
+pr = provResponse.json()
 # for res in pr['results']:
 # print(res['provider_name'])
