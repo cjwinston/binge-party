@@ -1,6 +1,7 @@
 import requests
 import json
 import plotly.express as px
+import pandas as pd
 
 def menu():
     #print("Hello! Welcome to Binge-Party!!")
