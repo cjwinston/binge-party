@@ -1,6 +1,5 @@
 import requests
 import json
-import pandas as pd
 
 def menu():
     #print("Hello! Welcome to Binge-Party!!")
@@ -42,7 +41,7 @@ def getFeatureID(r, featureType):
             print(results['title'], results['release_date'], "ID:", results['id'])
     else:
         for results in r['results']:
-            print(results['name'], "ID:", results['id'])
+            print(results['name'], results['first_air_date'], "ID:", results['id'])
     resultID = input("Type in the id of the movie/show you're interested in: ")
     return resultID
 
@@ -77,6 +76,53 @@ def printProvResults(pr, buyOption, featureType):
     print("Here are all of the platforms you can find this on: ")
     for results in pr['US'][buyOption]:
         print(results['provider_name'])
+        
+def graphing(ID, pr, api_key, typ):
+    print('Would you like to see a graph of the available types of providers?')
+    graphResponse = input('Enter 1 for yes or 0 for no: ')
+    if graphResponse == '1':
+        if typ == '1':
+            typesProviders = ['Streaming', 'Rent', 'Buy']
+            streamingCounter = 0
+            for results in pr['results']['US']['flatrate']:
+                streamingCounter += 1
+            rentCounter = 0
+            for results in pr['results']['US']['rent']:
+                rentCounter += 1
+            buyCounter = 0
+            for results in pr['results']['US']['buy']:
+                buyCounter += 1
+            provCounter = [streamingCounter, rentCounter, buyCounter]
+            detailsM = requests.get('https://api.themoviedb.org/3/movie/'
+                            + ID +'?api_key=' + api_key + '&language=en-U')
+            details = detailsM.json()
+            name = deatils['title']
+        else:
+            typesProviders = ['Streaming', 'Buy']
+            streamingCounter = 0
+            for results in pr['results']['US']['flatrate']:
+                streamingCounter += 1
+            buyCounter = 0
+            for results in pr['results']['US']['buy']:
+                buyCounter += 1
+            provCounter = [streamingCounter, buyCounter]
+            detailsT = requests.get('https://api.themoviedb.org/3/tv/'
+                            + ID +'?api_key=' + api_key + '&language=en-U')
+            details = detailsT.json()
+            name = details['name']
+        fig = px.bar(x=typesProviders, y=provCounter, 
+                     color = typesProviders,
+                     labels={'x':'Types of Providers', 'y':'Number of Providers'},
+                     title = name)
+        fig.write_html('figure.html')
+        maxVal = max(provCounter)
+        index = provCounter.index(maxVal)
+        if typesProviders[index] == 'Streaming':
+            print('There are more options to stream.')
+        elif typesProviders[index] == 'Rent':
+            print('There are more options to rent.')
+        else:
+            print('There are more options to buy.')
 
 
 def createDataFrame(pr, buyOption):
@@ -94,6 +140,7 @@ def main():
     resp = getTitleJSONData(api_key, search, typ)
     ID = getFeatureID(resp, typ)
     resp2 = getProvJsonData(typ, ID, api_key)
+    graphing(ID, resp2, api_key, typ)
     buyOp = getBuyOption()
     printProvResults(resp2, buyOp, typ)
     df = createDataFrame(resp2, buyOp)
