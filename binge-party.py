@@ -29,9 +29,9 @@ def getFeatureType():
 
 def getTitleJSONData(api_key, title, featureType):
     titleResponse = requests.get(
-                    'https://api.themoviedb.org/3/search/' +
-                     featureType +
-                    '?api_key='+ api_key + '&query=' + title
+                    'https://api.themoviedb.org/3/search/'
+                    + featureType + '?api_key='
+                    + api_key + '&query=' + title
                     )
     r = titleResponse.json()
     return r
@@ -54,7 +54,8 @@ def getProvJsonData(featureType, resultID, api_key):
                     + featureType + '/' + resultID
                     + '/watch/providers?api_key=' + api_key
                     )
-    pr = provResponse.json()
+    re = provResponse.json()
+    pr = re['results']
     return pr
 
 
@@ -75,7 +76,7 @@ def getBuyOption():
 
 def printProvResults(pr, buyOption, featureType):
     print("Here are all of the platforms you can find this on: ")
-    for results in pr['results']['US'][buyOption]:
+    for results in pr['US'][buyOption]:
         print(results['provider_name'])
         
 def graphing(ID, pr, api_key, typ):
@@ -126,6 +127,14 @@ def graphing(ID, pr, api_key, typ):
             print('There are more options to buy.')
 
 
+def createDataFrame(pr, buyOption):
+    buyOpData = pr['US'][buyOption]
+    df = pd.DataFrame(buyOpData)
+    cols = ['provider_name', 'provider_id', 'display_priority', 'logo_path']
+    df = df[cols]
+    return df
+
+
 def main():
     api_key = '25cd471bedf2ee053df9b1705494367d'
     search = getFeatureTitle()
@@ -136,6 +145,8 @@ def main():
     graphing(ID, resp2, api_key, typ)
     buyOp = getBuyOption()
     printProvResults(resp2, buyOp, typ)
+    df = createDataFrame(resp2, buyOp)
+    print(df)
 
 
 if __name__ == "__main__":
