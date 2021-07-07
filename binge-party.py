@@ -1,5 +1,6 @@
 import requests
 import json
+import matplotlib.pyplot as plt
 
 def menu():
     #print("Hello! Welcome to Binge-Party!!")
@@ -75,6 +76,29 @@ def printProvResults(pr, buyOption, featureType):
     print("Here are all of the platforms you can find this on: ")
     for results in pr['results']['US'][buyOption]:
         print(results['provider_name'])
+        
+def graphing(ID, pr):
+    print('Would you like to see a graph of the available types of providers?')
+    graphResponse = input('Enter 1 for yes or 0 for no: ')
+    if graphResponse == '1':
+        typesProviders = ['Streaming', 'Rent', 'Buy']
+        streamingCounter = 0
+        for results in pr['results']['US']['flatrate']:
+            streamingCounter += 1
+        rentCounter = 0
+        for results in pr['results']['US']['rent']:
+            rentCounter += 1
+        buyCounter = 0
+        for results in pr['results']['US']['buy']:
+            buyCounter += 1
+
+        provCounter = [streamingCounter, rentCounter, buyCounter]
+        fig, ax = plt.subplots()
+        ax.bar(typesProviders, provCounter)
+        ax.set_title('Provider Options for')
+        ax.set_xlabel('Types of Providers')
+        ax.set_ylabel('Number of Providers')
+        plt.show()
 
 
 def main():
@@ -84,6 +108,7 @@ def main():
     resp = getTitleJSONData(api_key, search, typ)
     ID = getFeatureID(resp, typ)
     resp2 = getProvJsonData(typ, ID, api_key)
+    graphing(ID, resp2)
     buyOp = getBuyOption()
     printProvResults(resp2, buyOp, typ)
 
