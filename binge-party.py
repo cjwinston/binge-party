@@ -58,14 +58,10 @@ def getFeatureID(r, featureType):
             print(results['title'], results['release_date'], "ID:", results['id'])
     else:
         for results in r['results']:
-<<<<<<< HEAD
             print(results['name'], "ID:", results['id'])
-    print("")
-    resultID = input("Enter the ID of the title you're interested in: ")
-=======
+    #print("")
             print(results['name'], results['first_air_date'], "ID:", results['id'])
     resultID = input("Type in the id of the movie/show you're interested in: ")
->>>>>>> 4138d8d7e4ab3bc927f23fae978795ede45a6ff2
     return resultID
 
 
@@ -102,17 +98,12 @@ Enter a number: """)))
 
 
 def printProvResults(pr, buyOption, featureType):
-<<<<<<< HEAD
     print("""
         ****************************
         * FOUND ON PLATFORMS BELOW *
         ****************************
         """)
-    for results in pr['results']['US'][buyOption]:
-=======
-    print("Here are all of the platforms you can find this on: ")
     for results in pr['US'][buyOption]:
->>>>>>> 4138d8d7e4ab3bc927f23fae978795ede45a6ff2
         print(results['provider_name'])
         
 def graphing(ID, pr, api_key, typ):
@@ -179,19 +170,16 @@ def main():
     resp = getTitleJSONData(api_key, search, typ)
     ID = getFeatureID(resp, typ)
     resp2 = getProvJsonData(typ, ID, api_key)
-    graphing(ID, resp2, api_key, typ)
+    #graphing(ID, resp2, api_key, typ)
     buyOp = getBuyOption()
     printProvResults(resp2, buyOp, typ)
-<<<<<<< HEAD
     print("""
         ***************************************
         * THANK YOU FOR USING BINGE-PARTY! :) *
         ***************************************
         """)
-=======
     df = createDataFrame(resp2, buyOp)
-    print(df)
->>>>>>> 4138d8d7e4ab3bc927f23fae978795ede45a6ff2
+    #print(df)
 
 
 if __name__ == "__main__":
