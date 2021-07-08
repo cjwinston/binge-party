@@ -10,11 +10,10 @@ def menu():
         * Hello! Welcome to Binge-Party!! *
         ***********************************
         """)
-    pass
 
 
 def getFeatureTitle():
-    title = input("Full name of desired film: ")
+    title = input("Full name of desired film or tv show: ")
     return title
 
 
@@ -54,9 +53,11 @@ def getFeatureID(r, featureType):
         * TOP RESULTS BELOW *
         *********************
         """)
+    counter = 1
+    dataDict = {}
     if featureType == 'movie':
         for results in r['results']:
-            print(results['title'])
+            print(counter, ").", results['title'])
             try:
                 if results['release_date'] == "":
                     print("     No release date")
@@ -64,10 +65,11 @@ def getFeatureID(r, featureType):
                     print("     Released", results['release_date'])
             except KeyError:
                 print("     No release date")
-            print("     ID:", results['id'])
+            dataDict[counter] = results['id']
+            counter += 1
     else:
         for results in r['results']:
-            print(results['name'])
+            print(counter, ").",results['name'])
             try:
                 if results['first_air_date'] == "":
                     print("     No first air date")
@@ -75,9 +77,12 @@ def getFeatureID(r, featureType):
                     print("     Released", results['first_air_date'])
             except KeyError:
                 print("     No first air date date")
-            print("     ID:", results['id'])
-    resultID = input("Type in the id of the movie/show you're interested in: ")
-    return resultID
+            dataDict[counter] = results['id']
+            counter += 1
+    print("")
+    option = input("Enter the number of the movie/show you're interested in: ")
+    resultID = dataDict[int(option)]
+    return str(resultID)
 
 
 def getProvJsonData(featureType, resultID, api_key):
@@ -208,6 +213,7 @@ def main():
         printProvResults(resp2, buyOp, typ)
         # df = createDataFrame(resp2, buyOp)
         # print(df)
+        print("")
         runAgain = input("Would you like to search for another title(y/n)? ")
         runAgain.lower()
         if(runAgain == 'n' or runAgain == 'no'):
