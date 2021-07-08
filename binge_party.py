@@ -69,7 +69,7 @@ def getFeatureID(r, featureType):
             counter += 1
     else:
         for results in r['results']:
-            print(counter, ").",results['name'])
+            print(counter, ").", results['name'])
             try:
                 if results['first_air_date'] == "":
                     print("     No first air date")
