@@ -138,10 +138,10 @@ def graphing(ID, pr, api_key, typ):
         else:
             typesProviders = ['Streaming', 'Buy']
             streamingCounter = 0
-            for results in pr['results']['US']['flatrate']:
+            for results in pr['US']['flatrate']:
                 streamingCounter += 1
             buyCounter = 0
-            for results in pr['results']['US']['buy']:
+            for results in pr['US']['buy']:
                 buyCounter += 1
             provCounter = [streamingCounter, buyCounter]
             detailsT = requests.get('https://api.themoviedb.org/3/tv/'
