@@ -1,6 +1,7 @@
 import unittest
 from binge_party import getTitleJSONData, getProvJsonData, printProvResults
 
+
 class TestBinge(unittest.TestCase):
     def test_getTitleJSONData(self):
         api_key = '25cd471bedf2ee053df9b1705494367d'
