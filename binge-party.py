@@ -55,12 +55,21 @@ def getFeatureID(r, featureType):
         """)
     if featureType == 'movie':
         for results in r['results']:
-            print(results['title'], results['release_date'], "ID:", results['id'])
+            print(results['title'])
+            try:
+                if results['release_date'] == "":
+                    print("     No release date")
+                else:
+                    print("     Released", results['release_date'])
+            except:
+                print("     No release date")
+            print("     ID:", results['id'])
     else:
         for results in r['results']:
-            print(results['name'], "ID:", results['id'])
-    #print("")
-            print(results['name'], results['first_air_date'], "ID:", results['id'])
+            print(results['name'])
+            if results['first_air_date']:
+                print("     First Aired:", results['first_air_date'])
+            print("     ID:", results['id'])
     resultID = input("Type in the id of the movie/show you're interested in: ")
     return resultID
 
@@ -113,13 +122,13 @@ def graphing(ID, pr, api_key, typ):
         if typ == '1':
             typesProviders = ['Streaming', 'Rent', 'Buy']
             streamingCounter = 0
-            for results in pr['results']['US']['flatrate']:
+            for results in pr['US']['flatrate']:
                 streamingCounter += 1
             rentCounter = 0
-            for results in pr['results']['US']['rent']:
+            for results in pr['US']['rent']:
                 rentCounter += 1
             buyCounter = 0
-            for results in pr['results']['US']['buy']:
+            for results in pr['US']['buy']:
                 buyCounter += 1
             provCounter = [streamingCounter, rentCounter, buyCounter]
             detailsM = requests.get('https://api.themoviedb.org/3/movie/'
@@ -170,7 +179,7 @@ def main():
     resp = getTitleJSONData(api_key, search, typ)
     ID = getFeatureID(resp, typ)
     resp2 = getProvJsonData(typ, ID, api_key)
-    #graphing(ID, resp2, api_key, typ)
+    graphing(ID, resp2, api_key, typ)
     buyOp = getBuyOption()
     printProvResults(resp2, buyOp, typ)
     print("""
