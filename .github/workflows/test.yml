@@ -25,6 +25,9 @@ jobs:
         
       - name: Install pandas
         run: python -m pip install pandas
+        
+      - name: Install plotly
+        run: python -m pip install plotly
 
       - name: Test with unittest
         run: |
