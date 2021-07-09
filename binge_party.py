@@ -1,5 +1,10 @@
 import requests
 import json
+import os
+import pandas as pd
+import datetime
+import sqlalchemy
+from sqlalchemy import create_engine
 
 
 def menu():
@@ -10,8 +15,11 @@ def menu():
         """)
 
 
-def getFeatureTitle():
-    title = input("Enter the name: ")
+def getFeatureTitle(typ):
+    if typ == 'movie':
+        title = input("Enter the movie name: ")
+    else:
+        title = input("Enter the name of the tv show: ")
     return title
 
 
@@ -116,6 +124,7 @@ Enter a number: """)))
 
 
 def printProvResults(pr, buyOption, featureType):
+    print()
     print("""
         ****************************
         * FOUND ON PLATFORMS BELOW *
@@ -125,23 +134,65 @@ def printProvResults(pr, buyOption, featureType):
         for results in pr['US'][buyOption]:
             print(results['provider_name'], "\n")
     except KeyError:
-        if buyOption == 1:
+        if buyOption == 'flatrate':
             print('There are no streaming options currently available.\n')
-        elif buyOption == 2:
+        elif buyOption == 'rent':
             print('There are no rent options currently available.\n')
         else:
             print('There are no buy options currently available.\n')
 
 
+def create_database(database_name):
+    os.system('mysql -u root -pcodio -e "CREATE DATABASE IF NOT EXISTS '
+              + database_name+';"')
+
+
+def create_Dict(ID, typ, api_key):
+    if typ == 'movie':
+        details = requests.get('https://api.themoviedb.org/3/movie/'
+                               + ID + '?api_key=' + api_key
+                               + '&language=en-US')
+        detailsM = details.json()
+        name = detailsM['title']
+    else:
+        details = requests.get('https://api.themoviedb.org/3/tv/'
+                               + ID + '?api_key=' + api_key
+                               + '&language=en-US')
+        detailsT = details.json()
+        name = detailsT['name']
+    currentDate = datetime.datetime.now()
+    histDict = {datetime: [ID, typ, name]}
+    return histDict
+
+
+def dict_to_dataframes(dictionary):
+    return pd.DataFrame.from_dict(dictionary,
+                                  orient='index',
+                                  columns=['ID', 'Type', 'Title'])
+
+
+def create_Table(database_name, dataFrame, userName, changes='replace'):
+    engine = create_engine('mysql://root:codio@localhost/' + database_name)
+    dataFrame.to_sql(userName, con=engine, if_exists=changes, index=False)
+
+
+def save_database(database_name, sql_filename):
+    os.system('mysqldump -u root -pcodio ' + database_name + '>'
+              + sql_filename)
+
+
 def main():
     loop = True
+    databaseName = 'bingeParty'
+    fileName = 'bingeParty.sql'
+    userName = input("What's your name? ")
     while(loop):
         menu()
         api_key = '25cd471bedf2ee053df9b1705494367d'
         hasResults = False
         while(not hasResults):
             typ = getFeatureType()
-            search = getFeatureTitle()
+            search = getFeatureTitle(typ)
             resp = getTitleJSONData(api_key, search, typ)
             if resp['total_results'] != 0:
                 hasResults = True
@@ -161,6 +212,11 @@ choose another movie or show!
             moreOps = input('Enter yes or no: ')
             moreOps.lower()
         print("")
+        create_database(databaseName)
+        histDict = create_Dict(ID, typ, api_key)
+        hisDF = dict_to_dataframes(histDict)
+        create_Table(databaseName, hisDF, userName, changes='append')
+        save_database(databaseName, fileName)
         runAgain = input("Would you like to search for another title(y/n)? ")
         runAgain.lower()
         if(runAgain == 'n' or runAgain == 'no'):
