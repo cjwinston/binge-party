@@ -231,4 +231,3 @@ choose another movie or show!
 
 if __name__ == "__main__":
     main()
-
