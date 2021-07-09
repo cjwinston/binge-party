@@ -124,6 +124,8 @@ Enter a number: """)))
 
 
 def printProvResults(pr, buyOption, featureType):
+    print(buyOption)
+    print()
     print("""
         ****************************
         * FOUND ON PLATFORMS BELOW *
@@ -149,16 +151,18 @@ def create_database(database_name):
 def create_Dict(ID, typ, api_key):
     if typ == 'movie':
         details = requests.get('https://api.themoviedb.org/3/movie/'
-                                + ID + '?api_key=' + api_key + '&language=en-US')
+                               + ID + '?api_key=' + api_key 
+                               + '&language=en-US')
         detailsM = details.json()
         name = detailsM['title']
     else:
         details = requests.get('https://api.themoviedb.org/3/tv/'
-                                + ID + '?api_key=' + api_key + '&language=en-US')
+                               + ID + '?api_key=' + api_key 
+                               + '&language=en-US')
         detailsT = details.json()
         name = detailsT['name']
-    currentDate = datetime.datetime.now() 
-    histDict = {datetime : [ID, typ, name]}
+    currentDate = datetime.datetime.now()
+    histDict = {datetime: [ID, typ, name]}
     return histDict
 
 
