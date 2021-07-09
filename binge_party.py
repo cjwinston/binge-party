@@ -167,7 +167,7 @@ def create_Dict(ID, typ, api_key):
 
 def dict_to_dataframes(dictionary):
     return pd.DataFrame.from_dict(dictionary,
-                                  orient='index', 
+                                  orient='index',
                                   columns=['ID', 'Type', 'Title'])
 
 
