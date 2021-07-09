@@ -1,7 +1,5 @@
 import requests
 import json
-import plotly.express as px
-import pandas as pd
 
 
 def menu():
@@ -13,7 +11,7 @@ def menu():
 
 
 def getFeatureTitle():
-    title = input("Full name of desired film or tv show: ")
+    title = input("Enter the name: ")
     return title
 
 
@@ -26,7 +24,7 @@ def switch(featureType):
 
 
 def getFeatureType():
-    print("Is this a movie or tv show?")
+    print("Are you looking for a movie or tv show?")
     featureType = switch(int(input("""
     **************
     * 1. Movie   *
@@ -57,7 +55,7 @@ def getFeatureID(r, featureType):
     dataDict = {}
     if featureType == 'movie':
         for results in r['results']:
-            print(counter, ").", results['title'])
+            print(counter, "--", results['title'])
             try:
                 if results['release_date'] == "":
                     print("     No release date")
@@ -69,7 +67,7 @@ def getFeatureID(r, featureType):
             counter += 1
     else:
         for results in r['results']:
-            print(counter, ").", results['name'])
+            print(counter, "--", results['name'])
             try:
                 if results['first_air_date'] == "":
                     print("     No first air date")
@@ -125,73 +123,14 @@ def printProvResults(pr, buyOption, featureType):
         """)
     try:
         for results in pr['US'][buyOption]:
-            print(results['provider_name'])
+            print(results['provider_name'], "\n")
     except KeyError:
         if buyOption == 1:
-            print('There are no streaming options currently available.')
+            print('There are no streaming options currently available.\n')
         elif buyOption == 2:
-            print('There are no rent options currently available.')
+            print('There are no rent options currently available.\n')
         else:
-            print('There are no buy options currently available.')
-
-
-def graphing(ID, pr, api_key, typ):
-    print('Would you like to see a graph of the available types of providers?')
-    graphResponse = input('Enter 1 for yes or 0 for no: ')
-    if graphResponse == '1':
-        if typ == 1:
-            typesProviders = ['Streaming', 'Rent', 'Buy']
-            streamingCounter = 0
-            for results in pr['US']['flatrate']:
-                streamingCounter += 1
-            rentCounter = 0
-            for results in pr['US']['rent']:
-                rentCounter += 1
-            buyCounter = 0
-            for results in pr['US']['buy']:
-                buyCounter += 1
-            provCounter = [streamingCounter, rentCounter, buyCounter]
-            detailsM = requests.get('https://api.themoviedb.org/3/movie/'
-                                    + ID + '?api_key='
-                                    + api_key + '&language=en-U')
-            details = detailsM.json()
-            name = deatils['title']
-        else:
-            typesProviders = ['Streaming', 'Buy']
-            streamingCounter = 0
-            for results in pr['US']['flatrate']:
-                streamingCounter += 1
-            buyCounter = 0
-            for results in pr['US']['buy']:
-                buyCounter += 1
-            provCounter = [streamingCounter, buyCounter]
-            detailsT = requests.get('https://api.themoviedb.org/3/tv/'
-                                    + ID + '?api_key='
-                                    + api_key + '&language=en-U')
-            details = detailsT.json()
-            name = details['name']
-        fig = px.bar(x=typesProviders, y=provCounter,
-                     color=typesProviders,
-                     labels={'x': 'Types of Providers',
-                             'y': 'Number of Providers'},
-                     title=name)
-        fig.write_html('figure.html')
-        maxVal = max(provCounter)
-        index = provCounter.index(maxVal)
-        if typesProviders[index] == 'Streaming':
-            print('There are more options to stream.')
-        elif typesProviders[index] == 'Rent':
-            print('There are more options to rent.')
-        else:
-            print('There are more options to buy.')
-
-
-def createDataFrame(pr, buyOption):
-    buyOpData = pr['US'][buyOption]
-    df = pd.DataFrame(buyOpData)
-    cols = ['provider_name', 'provider_id', 'display_priority', 'logo_path']
-    df = df[cols]
-    return df
+            print('There are no buy options currently available.\n')
 
 
 def main():
@@ -201,18 +140,26 @@ def main():
         api_key = '25cd471bedf2ee053df9b1705494367d'
         hasResults = False
         while(not hasResults):
-            search = getFeatureTitle()
             typ = getFeatureType()
+            search = getFeatureTitle()
             resp = getTitleJSONData(api_key, search, typ)
             if resp['total_results'] != 0:
                 hasResults = True
+            else:
+                print("""
+There are no results for this title.
+Please make sure you entered the title correctly or
+choose another movie or show!
+                    """)
         ID = getFeatureID(resp, typ)
         resp2 = getProvJsonData(typ, ID, api_key)
-        # graphing(ID, resp2, api_key, typ)
-        buyOp = getBuyOption()
-        printProvResults(resp2, buyOp, typ)
-        # df = createDataFrame(resp2, buyOp)
-        # print(df)
+        moreOps = 'yes'
+        while(moreOps == 'y' or moreOps == 'yes'):
+            buyOp = getBuyOption()
+            printProvResults(resp2, buyOp, typ)
+            print('Would you like to see other provider options?')
+            moreOps = input('Enter yes or no: ')
+            moreOps.lower()
         print("")
         runAgain = input("Would you like to search for another title(y/n)? ")
         runAgain.lower()
