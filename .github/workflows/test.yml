@@ -28,9 +28,6 @@ jobs:
         
       - name: Install datetime
         run: python -m pip install datetime
-        
-      - name: Install os
-        run: python -m pip install os
 
       - name: Test with unittest
         run: |

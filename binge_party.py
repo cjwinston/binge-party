@@ -185,9 +185,9 @@ def main():
     loop = True
     databaseName = 'bingeParty'
     fileName = 'bingeParty.sql'
+    menu()
     userName = input("What's your name? ")
     while(loop):
-        menu()
         api_key = '25cd471bedf2ee053df9b1705494367d'
         hasResults = False
         while(not hasResults):
