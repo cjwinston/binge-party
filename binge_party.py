@@ -124,7 +124,6 @@ Enter a number: """)))
 
 
 def printProvResults(pr, buyOption, featureType):
-    print(buyOption)
     print()
     print("""
         ****************************
@@ -135,9 +134,9 @@ def printProvResults(pr, buyOption, featureType):
         for results in pr['US'][buyOption]:
             print(results['provider_name'], "\n")
     except KeyError:
-        if buyOption == 1:
+        if buyOption == 'buy':
             print('There are no streaming options currently available.\n')
-        elif buyOption == 2:
+        elif buyOption == 'rent':
             print('There are no rent options currently available.\n')
         else:
             print('There are no buy options currently available.\n')
@@ -151,7 +150,7 @@ def create_database(database_name):
 def create_Dict(ID, typ, api_key):
     if typ == 'movie':
         details = requests.get('https://api.themoviedb.org/3/movie/'
-                               + ID + '?api_key=' + api_key 
+                               + ID + '?api_key=' + api_key
                                + '&language=en-US')
         detailsM = details.json()
         name = detailsM['title']
@@ -168,7 +167,8 @@ def create_Dict(ID, typ, api_key):
 
 def dict_to_dataframes(dictionary):
     return pd.DataFrame.from_dict(dictionary,
-                                  orient='index', columns=['ID', 'Type', 'Title'])
+                                  orient='index', 
+                                  columns=['ID', 'Type', 'Title'])
 
 
 def create_Table(database_name, dataFrame, userName, changes='replace'):
