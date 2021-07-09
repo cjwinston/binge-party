@@ -134,7 +134,7 @@ def printProvResults(pr, buyOption, featureType):
         for results in pr['US'][buyOption]:
             print(results['provider_name'], "\n")
     except KeyError:
-        if buyOption == 'buy':
+        if buyOption == 'flatrate':
             print('There are no streaming options currently available.\n')
         elif buyOption == 'rent':
             print('There are no rent options currently available.\n')
@@ -156,7 +156,7 @@ def create_Dict(ID, typ, api_key):
         name = detailsM['title']
     else:
         details = requests.get('https://api.themoviedb.org/3/tv/'
-                               + ID + '?api_key=' + api_key 
+                               + ID + '?api_key=' + api_key
                                + '&language=en-US')
         detailsT = details.json()
         name = detailsT['name']
